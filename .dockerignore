@@ -1,0 +1,8 @@
+*
+!Cargo.toml
+!Cargo.lock
+!src/**
+!assets/**
+!config/products.json
+!Containerfile
+

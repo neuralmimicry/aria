@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Aria · NeuralMimicry</title>
+    <link rel="stylesheet" href="/dashboard.css" />
+    <script src="/dashboard.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="https://neuralmimicry.ai/"
+        >NeuralMimicry<span>Aria</span></a
+      >
+      <nav id="products" aria-label="NeuralMimicry products">
+        <a href="https://neuralmimicry.ai/control-panel">Control Panel</a>
+      </nav>
+    </header>
+    <main>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Automated Regulation &amp; Integrity Arbiter</p>
+          <h1>Keep intelligence accountable.</h1>
+          <p class="muted">
+            Monitor Gail traffic, investigate concerns and control how AI
+            operates across your products.
+          </p>
+        </div>
+        <div class="status" id="connection" role="status">Disconnected</div>
+      </section>
+      <form id="login" class="panel login">
+        <label for="token">Access token</label
+        ><input
+          id="token"
+          type="password"
+          autocomplete="off"
+          required
+          placeholder="Viewer or operator token"
+        /><button type="submit">Connect</button>
+        <p class="muted">Your token stays in this tab’s memory.</p>
+      </form>
+      <div id="notice" role="alert" hidden></div>
+      <div id="workspace" hidden>
+        <div class="toolbar">
+          <span id="identity"></span><span id="updated" class="muted"></span
+          ><button id="refresh" type="button">Refresh</button
+          ><button id="disconnect" type="button">Disconnect</button>
+        </div>
+        <section class="stats" aria-label="Governance overview">
+          <article class="panel">
+            <p>Allowed</p>
+            <strong id="allow-count">0</strong>
+          </article>
+          <article class="panel">
+            <p>Alerts</p>
+            <strong id="alert-count">0</strong>
+          </article>
+          <article class="panel">
+            <p>Blocked</p>
+            <strong id="block-count">0</strong>
+          </article>
+          <article class="panel">
+            <p>Awaiting review</p>
+            <strong id="review-count">0</strong>
+          </article>
+        </section>
+        <section class="columns">
+          <div class="panel">
+            <div class="section-heading">
+              <h2>Runtime policy</h2>
+              <span id="revision" class="badge"></span>
+            </div>
+            <p id="pause-state"></p>
+            <form id="policy-form">
+              <fieldset id="policy-fields" disabled>
+                <label class="check"
+                  ><input id="paused" type="checkbox" /> Pause governed
+                  traffic</label
+                >
+                <label class="check"
+                  ><input id="ai-enabled" type="checkbox" /> AI assessment
+                  through Gail</label
+                >
+                <label class="check"
+                  ><input id="require-ai" type="checkbox" /> Block when AI
+                  assessment is unavailable</label
+                >
+                <label class="check"
+                  ><input id="block-uninspectable" type="checkbox" /> Block
+                  content that cannot be fully inspected</label
+                >
+                <div class="field-pair">
+                  <label
+                    >Alert threshold<input
+                      id="alert-threshold"
+                      type="number"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      required /></label
+                  ><label
+                    >Block threshold<input
+                      id="block-threshold"
+                      type="number"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      required
+                  /></label>
+                </div>
+                <label
+                  >Maximum body size (bytes)<input
+                    id="max-body"
+                    type="number"
+                    min="1024"
+                    max="1048576"
+                    required
+                /></label>
+                <label
+                  >Blocked sources (one client ID per line)<textarea
+                    id="blocked-sources"
+                    rows="3"
+                  ></textarea>
+                </label>
+                <button type="submit">Save policy</button>
+              </fieldset>
+            </form>
+            <p class="muted">
+              Policy changes are versioned and attributed to your account. Gail
+              must use enforcement mode for blocks and pauses to stop traffic.
+            </p>
+          </div>
+          <div class="panel">
+            <h2>Operational health</h2>
+            <dl>
+              <dt>Gail governance</dt>
+              <dd id="gateway-mode">Awaiting status</dd>
+              <dt>On a governance outage</dt>
+              <dd id="gateway-failure">Unknown</dd>
+              <dt>Pending alert deliveries</dt>
+              <dd id="pending-alerts">0</dd>
+              <dt>Exhausted deliveries</dt>
+              <dd id="failed-alerts">0</dd>
+            </dl>
+            <p>
+              Each request and response is assessed separately. Findings combine
+              deterministic checks with the configured Gail models.
+            </p>
+            <p class="muted">
+              AI findings indicate risk; they do not establish intent. Review
+              context before changing policy.
+            </p>
+            <h3>Decision mix</h3>
+            <div
+              class="mix"
+              id="decision-mix"
+              aria-label="Decision proportions"
+            ></div>
+            <p id="mix-description" class="muted"></p>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="section-heading">
+            <h2>Recent decisions</h2>
+            <div class="filters">
+              <label
+                >Source<input
+                  id="source-filter"
+                  type="search"
+                  placeholder="All client IDs" /></label
+              ><label class="check"
+                ><input id="incidents-only" type="checkbox" /> Alerts and blocks
+                only</label
+              ><button id="export" type="button">Export visible records</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Source / route</th>
+                  <th>Phase</th>
+                  <th>Decision</th>
+                  <th>Findings</th>
+                  <th>Review</th>
+                </tr>
+              </thead>
+              <tbody id="events"></tbody>
+            </table>
+          </div>
+          <p class="muted">
+            Latest 100 decisions. Raw prompts and responses are not retained.
+          </p>
+        </section>
+        <section class="panel">
+          <h2>Management audit</h2>
+          <ul id="audit" class="audit"></ul>
+        </section>
+      </div>
+    </main>
+    <footer>
+      NeuralMimicry · Observable decisions. Accountable operations.
+    </footer>
+  </body>
+</html>
