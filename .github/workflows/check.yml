@@ -5,17 +5,27 @@ permissions:
 jobs:
   rust:
     runs-on: [self-hosted, Linux, X64]
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: aria-test-only
-          POSTGRES_DB: aria_test
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Docker for the integration database and image check
+        uses: docker/setup-docker-action@v5
+        with:
+          set-host: true
+      - name: Start PostgreSQL integration database
+        run: |
+          docker run --detach --name aria-test-postgres \
+            --publish 5432:5432 \
+            --env POSTGRES_PASSWORD=aria-test-only \
+            --env POSTGRES_DB=aria_test \
+            postgres:16
+          for attempt in $(seq 1 30); do
+            if docker exec aria-test-postgres pg_isready -U postgres -d aria_test; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs aria-test-postgres
+          exit 1
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -27,4 +37,3 @@ jobs:
           ARIA_TEST_DATABASE_URL: postgres://postgres:aria-test-only@127.0.0.1:5432/aria_test
       - run: node --check assets/dashboard.js
       - run: docker build -f Containerfile .
-
