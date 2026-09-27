@@ -11,6 +11,7 @@ jobs:
         uses: docker/setup-docker-action@v5
         with:
           set-host: true
+          rootless: true
       - name: Start PostgreSQL integration database
         run: |
           docker run --detach --name aria-test-postgres \
