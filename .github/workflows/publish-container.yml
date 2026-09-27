@@ -16,13 +16,19 @@ concurrency:
 
 jobs:
   container:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64]
     permissions:
       contents: read
       packages: write
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+
+      - name: Set up Docker for the multi-architecture build
+        uses: docker/setup-docker-action@v5
+        with:
+          set-host: true
+          rootless: true
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
