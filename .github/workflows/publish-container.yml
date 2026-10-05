@@ -58,6 +58,9 @@ jobs:
           labels: |
             org.opencontainers.image.source=https://github.com/neuralmimicry/aria
             org.opencontainers.image.revision=${{ github.sha }}
+          annotations: |
+            index:org.opencontainers.image.source=https://github.com/neuralmimicry/aria
+            index:org.opencontainers.image.description=Aria (Automated Regulation & Integrity Arbiter): policy and integrity enforcement service for the NeuralMimicry platform
           cache-from: type=gha,scope=aria-container
           cache-to: type=gha,scope=aria-container,mode=max
 

@@ -18,3 +18,10 @@ ENV ARIA_BIND=0.0.0.0:8091 ARIA_DATABASE_URL=sqlite:///data/aria.db?mode=rwc
 EXPOSE 8091
 HEALTHCHECK --interval=30s --timeout=3s CMD curl --fail --silent http://127.0.0.1:8091/healthz || exit 1
 ENTRYPOINT ["/usr/local/bin/aria"]
+
+# OCI metadata (final stage) so GHCR links the package to its source repository.
+LABEL org.opencontainers.image.source="https://github.com/neuralmimicry/aria" \
+      org.opencontainers.image.url="https://github.com/neuralmimicry/aria" \
+      org.opencontainers.image.description="Aria (Automated Regulation & Integrity Arbiter): policy and integrity enforcement service for the NeuralMimicry platform" \
+      org.opencontainers.image.vendor="NeuralMimicry" \
+      org.opencontainers.image.licenses="Apache-2.0"
